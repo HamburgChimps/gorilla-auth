@@ -1,10 +1,11 @@
 const { makeExecutableSchema, addMockFunctionsToSchema } = require('graphql-tools')
-const mocks = require('./mocks')
+// const mocks = require('./mocks')
+const resolvers = require('./resolvers')
 const { Grant, Group, Token, User } = require('./types')
 
 const typeDefs = `
 type Query {
-  users(namespace: String, name: String): User
+  user(namespace: String, name: String): User
   userById(id: Int): User
   allUsers: [User]
 
@@ -20,8 +21,8 @@ type Query {
 }
 `
 
-const schema = makeExecutableSchema({ typeDefs: [typeDefs, Grant, Group, Token, User] })
+const schema = makeExecutableSchema({ typeDefs: [typeDefs, Grant, Group, Token, User] , resolvers })
 
-addMockFunctionsToSchema({ schema, mocks })
+// addMockFunctionsToSchema({ schema, mocks })
 
 module.exports = schema
