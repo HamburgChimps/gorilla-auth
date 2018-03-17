@@ -21,7 +21,7 @@ type Query {
 }
 `
 
-const schema = makeExecutableSchema({ typeDefs: [typeDefs, Grant, Group, Token, User] , resolvers })
+const schema = makeExecutableSchema({ typeDefs: [typeDefs, Grant, Group, Token, User], resolvers })
 
 // addMockFunctionsToSchema({ schema, mocks })
 
