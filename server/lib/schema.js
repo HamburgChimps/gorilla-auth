@@ -1,15 +1,16 @@
-const {
-  GraphQLSchema,
-  GraphQLObjectType
-} = require('graphql')
+const { makeExecutableSchema, addMockFunctionsToSchema } = require('graphql-tools')
+const mocks = require('./mocks')
 
-const queries = require('./queries')
+const typeDefs = `
+type Query {
+  testString: String
+}
+`
 
-const schema = new GraphQLSchema({
-  query: new GraphQLObjectType({
-    name: 'Query',
-    fields: queries
-  })
+const schema = makeExecutableSchema({
+  typeDefs
 })
+
+addMockFunctionsToSchema({ schema, mocks })
 
 module.exports = schema

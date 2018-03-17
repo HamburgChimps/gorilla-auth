@@ -2,6 +2,7 @@ const express = require('express')
 const { graphqlExpress, graphiqlExpress } = require('apollo-server-express')
 const bodyParser = require('body-parser')
 const cors = require('cors')
+const schema = require('./schema')
 
 class Server {
   constructor (port = 9000, dev = false) {
@@ -19,10 +20,10 @@ class Server {
   }
 
   setupGraphQL () {
-    this._server.use('/graphql', graphqlExpress({}>))
+    this._server.use('/graphql', graphqlExpress({ schema }))
     // If application is in dev environment
     if (this._dev) {
-      this._server.use('/graphiql', graphiqlExpress({ endpointURL: '/graphiql' }))
+      this._server.use('/graphiql', graphiqlExpress({ endpointURL: '/graphql' }))
     }
   }
 
