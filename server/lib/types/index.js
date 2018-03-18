@@ -1,11 +1,15 @@
-const Grant = require('./Grant')
-const Group = require('./Group')
-const Token = require('./Token')
+const Query = require('./Query')
 const User = require('./User')
+const Group = require('./Group')
+const Grant = require('./Grant')
+const Token = require('./Token')
+const Mutation = require('./Mutation')
 
 module.exports = {
-  Grant,
+  Query,
+  User,
   Group,
+  Grant,
   Token,
-  User
+  Mutation
 }
