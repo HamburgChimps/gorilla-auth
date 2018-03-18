@@ -3,14 +3,17 @@ const { graphqlExpress, graphiqlExpress } = require('apollo-server-express')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const schema = require('./schema')
+const AuthRouter = require('./auth')
 
 class Server {
   constructor (port = 9000, dev = false) {
     this._server = express()
     this._port = port
     this._dev = dev
+    
     this.setupMiddleware()
     this.setupGraphQL()
+    this.setupAuthEndpoits()
   }
 
   setupMiddleware () {
@@ -25,6 +28,11 @@ class Server {
     if (this._dev) {
       this._server.use('/graphiql', graphiqlExpress({ endpointURL: '/graphql' }))
     }
+  }
+
+  setupAuthEndpoits () {
+    const authRouter = AuthRouter()
+    this._server.use('/auth', authRouter)
   }
 
   start () {
