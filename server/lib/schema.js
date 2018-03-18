@@ -6,11 +6,9 @@ const { Grant, Group, Token, User } = require('./types')
 const typeDefs = `
 type Query {
   user(namespace: String, name: String): User
-  userById(id: Int): User
   allUsers: [User]
 
   group(namespace: String, name: String): Group
-  groupById(id: Int): Group
   allGroups: [Group]
 
   grant(id: Int): Grant

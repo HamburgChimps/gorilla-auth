@@ -1,12 +1,29 @@
+const { User, Group, Grant, Token } = require('../connector')
+
 const Query = {
   user (root, args) {
-    return {name: args.name, namespace: args.namespace}
+    return User.find({ where: args })
   },
   allUsers () {
-    return [
-      { id: 1, namespace: 'system', name: 'admin' },
-      { id: 2, namespace: 'tech-1234', name: 'admin' }
-    ]
+    return User.findAll()
+  },
+  group (root, args) {
+    return Group.find( { where: args })
+  },
+  allGroups () {
+    return Group.findAll()
+  },
+  grant (root, args) {
+    return Grant.find({ where: args })
+  },
+  allGrants () {
+    return Grant.findAll()
+  },
+  token (root, args) {
+    return Token.find({ where: args })
+  },
+  allTokens () {
+    return Token.findAll()
   }
 }
 

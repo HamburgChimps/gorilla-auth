@@ -3,8 +3,8 @@ type Token {
   id: Int
   owner: User
   payload: String
-  creationDate: String
-  experitionDate: String
+  createdAt: String
+  expireAt: String
 }`
 
 module.exports = Token
