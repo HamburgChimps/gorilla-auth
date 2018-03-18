@@ -97,9 +97,21 @@ const Group = db.models.group
 const Grant = db.models.grant
 const Token = db.models.token
 
+async function authenticateUserWithPassword ({ namespace, name, password }) {
+  try {
+    let authenticated = false
+    const user = await UserModel.findOne({ where: { namespace, name } })
+    authenticated = user.password === password
+    return authenticated
+  } catch(err) {
+    console.log(err)
+  }
+}
+
 module.exports = {
   User,
   Group,
   Grant,
-  Token
+  Token,
+  authenticateUserWithPassword
 }

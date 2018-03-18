@@ -1,5 +1,6 @@
 'use strict'
 const { Router } = require('express')
+const { authenticateUserWithPassword } = require('./connector')
 
 function AuthRouter () {
   const authRouter = new Router()
@@ -12,7 +13,14 @@ function AuthRouter () {
     try {
       const {username, password} = req.body
       console.log(username, password)
-      res.status(200).send({ result: 'OK' })
+      let authenticated = false
+      authenticated = await authenticateUserWithPassword({
+        namespace: 'system',
+        name: username,
+        password
+      })
+      if (authenticated) res.status(200).send({ result: 'OK' })
+      res.status(200).send({ result: { error: 'FORBIDDEN' }})
     } catch (err) {
       console.log(err)
       res.send(err)
