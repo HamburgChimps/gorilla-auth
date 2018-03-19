@@ -19,6 +19,11 @@ const GroupModel = db.define('group', {
   name: { type: Sequelize.STRING }
 })
 
+const GrantModel = db.define('grant', {
+  permission: { type: Sequelize.STRING },
+  ressource: { type: Sequelize.STRING }
+})
+
 const TokenModel = db.define('token', {
   payload: { type: Sequelize.STRING },
   expireAt: { type: Sequelize.DATE }
