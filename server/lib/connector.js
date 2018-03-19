@@ -1,5 +1,7 @@
 const { Sequelize } = require('sequelize')
+const bcrypt = require('bcrypt')
 const moment = require('moment')
+const jwt = require('jsonwebtoken')
 
 const db = new Sequelize('auth', null, null, {
   dialect: 'sqlite',
@@ -9,17 +11,12 @@ const db = new Sequelize('auth', null, null, {
 const UserModel = db.define('user', {
   namespace: { type: Sequelize.STRING },
   name: { type: Sequelize.STRING },
-  password: { type: Sequelize.STRING }
+  encrypted_password: { type: Sequelize.STRING }
 })
 
 const GroupModel = db.define('group', {
   namespace: { type: Sequelize.STRING },
   name: { type: Sequelize.STRING }
-})
-
-const GrantModel = db.define('grant', {
-  permission: { type: Sequelize.STRING },
-  ressource: { type: Sequelize.STRING }
 })
 
 const TokenModel = db.define('token', {
@@ -49,12 +46,12 @@ db.sync({ force: true }).then(async () => {
   const systemAdmin = await UserModel.create({
     namespace: "system",
     name: "admin",
-    password: "admin"
+    encrypted_password: await bcrypt.hash("admin", 12)
   })
   const techUser = await UserModel.create({
     namespace: "tech-12345",
     name: "admin",
-    password: "tech"
+    encrypted_password: await bcrypt.hash("tech", 12)
   })
   const wheelGroup = await systemAdmin.createGroup({
     namespace: "system",
@@ -85,10 +82,18 @@ db.sync({ force: true }).then(async () => {
     permission: 'MQTT_PUBLISH',
     ressource: '/tech-12345/tracks/hello'
   })
-
+  const expireAt = moment().add(7, 'days')
+  const tokenData = {
+    namespace: systemAdmin.namespace,
+    name: systemAdmin.name,
+    context: 'HTTP'
+  }
   await systemAdmin.createToken({
-    payload: 'jwt_token',
-    expireAt: moment().add(7, 'days')
+    payload: await jwt.sign({
+      exp: expireAt.unix(),
+      data: tokenData
+    }, 'SUPER_SECRET', ),
+    expireAt
   })
 })
 
@@ -101,7 +106,7 @@ async function authenticateUserWithPassword ({ namespace, name, password }) {
   try {
     let authenticated = false
     const user = await UserModel.findOne({ where: { namespace, name } })
-    authenticated = user.password === password
+    authenticated = await bcrypt.compare(password, user.encrypted_password)
     return authenticated
   } catch(err) {
     console.log(err)

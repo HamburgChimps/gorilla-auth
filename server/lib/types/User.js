@@ -1,9 +1,8 @@
 const User = `
 type User {
-  id: Int
-  namespace: String
-  name: String
-  password: String
+  id: Int!
+  namespace: String!
+  name: String!
   groups: [Group]
   tokens: [Token]
 }`
