@@ -1,7 +1,0 @@
-version: '3'
-services:
-  server:
-    image: # Image from docker-hub
-    hostname: server
-    ports:
-     - "9000:9000"

@@ -1,9 +1,13 @@
-echo Starting install script
+#!/bin/bash
 
-docker pull mhart/alpine-node:8.9
+VERSION=8.9
 
-docker run --rm -v $(pwd)/server:${pwd}/server \
--w /server \
-mhart/alpine-node:8.9 yarn install
+cd $(dirname `[[ $0 = /* ]] && echo "$0" || echo "$PWD/${0#./}"`)
 
-echo Finished installing
+VERSION=$VERSION builder/ensure.sh
+
+docker run --rm -v $(pwd)/server:/app \
+-w /app/ \
+-e NODE_ENV=$NODE_ENV \
+gorilla/builder-tool:$VERSION ash -c \
+"yarn install $@ && chown -R $(id -u):$(id -g) yarn.lock node_modules"
