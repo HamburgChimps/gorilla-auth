@@ -39,6 +39,10 @@ class Server {
       console.log(`Server is now running on port ${this._port}`)
     })
   }
+
+  stop () {
+    return this._server.close()
+  }
 }
 
 module.exports = Server
