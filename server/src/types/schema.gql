@@ -1,0 +1,31 @@
+type User {
+  id: Int!
+  namespace: String!
+  name: String!
+  groups: [Group]
+  tokens: [Token]
+}
+
+type Token {
+  id: Int
+  owner: User
+  payload: String
+  createdAt: String
+  expireAt: String
+}
+
+type Group {
+  id: Int
+  namespace: String
+  name: String
+  grants: [Grant]
+  members: [User]
+}
+
+
+type Grant {
+  id: Int
+  owner: Group
+  permission: String
+  ressource: String
+}

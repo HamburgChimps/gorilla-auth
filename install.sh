@@ -9,5 +9,5 @@ VERSION=$VERSION builder/ensure.sh
 docker run --rm -v $(pwd)/server:/app \
 -w /app/ \
 -e NODE_ENV=$NODE_ENV \
-gorilla/builder-tool:$VERSION ash -c \
+gorilla/builder:$VERSION ash -c \
 "yarn install $@ && chown -R $(id -u):$(id -g) yarn.lock node_modules"

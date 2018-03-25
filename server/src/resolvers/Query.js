@@ -1,4 +1,4 @@
-const { User, Group, Grant, Token } = require('../connector')
+const { User, Group, Grant, Token } = require('../db')
 
 const Query = {
   user (root, args) {
@@ -8,7 +8,7 @@ const Query = {
     return User.findAll()
   },
   group (root, args) {
-    return Group.find( { where: args })
+    return Group.find({ where: args })
   },
   allGroups () {
     return Group.findAll()

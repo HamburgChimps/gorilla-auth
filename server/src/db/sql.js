@@ -49,26 +49,26 @@ GrantModel.belongsTo(GroupModel)
 
 db.sync({ force: true }).then(async () => {
   const systemAdmin = await UserModel.create({
-    namespace: "system",
-    name: "admin",
-    encrypted_password: await bcrypt.hash("admin", 12)
+    namespace: 'system',
+    name: 'admin',
+    encrypted_password: await bcrypt.hash('admin', 12)
   })
   const techUser = await UserModel.create({
-    namespace: "tech-12345",
-    name: "admin",
-    encrypted_password: await bcrypt.hash("tech", 12)
+    namespace: 'tech-12345',
+    name: 'admin',
+    encrypted_password: await bcrypt.hash('tech', 12)
   })
   const wheelGroup = await systemAdmin.createGroup({
-    namespace: "system",
-    name: "wheel"
+    namespace: 'system',
+    name: 'wheel'
   })
   const systemAdminGroup = await systemAdmin.createGroup({
-    namespace: "system",
-    name: "admin",
+    namespace: 'system',
+    name: 'admin',
   })
   const techUserGroup = await techUser.createGroup({
-    namespace: "tech-12345",
-    name: "admin"
+    namespace: 'tech-12345',
+    name: 'admin'
   })
 
   await systemAdminGroup.createGrant({
@@ -97,7 +97,7 @@ db.sync({ force: true }).then(async () => {
     payload: await jwt.sign({
       exp: expireAt.unix(),
       data: tokenData
-    }, 'SUPER_SECRET', ),
+    }, 'SUPER_SECRET'),
     expireAt
   })
 })
@@ -113,7 +113,7 @@ async function authenticateUserWithPassword ({ namespace, name, password }) {
     const user = await UserModel.findOne({ where: { namespace, name } })
     authenticated = await bcrypt.compare(password, user.encrypted_password)
     return authenticated
-  } catch(err) {
+  } catch (err) {
     console.log(err)
   }
 }

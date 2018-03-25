@@ -1,4 +1,3 @@
-const Query = `
 type Query {
   user(namespace: String, name: String): User
   allUsers: [User]
@@ -12,5 +11,3 @@ type Query {
   token(id: Int): Token
   allTokens: [Token]
 }
-`
-module.exports = Query
