@@ -5,7 +5,7 @@
   "license": "MIT",
   "dependencies": {
     "apollo-server-express": "^1.3.2",
-    "bcrypt": "^1.0.3",
+    "bcrypt": "kelektiv/node.bcrypt.js#054cf76ba6e2127560ed897d00b5b88d11dc5626",
     "body-parser": "^1.18.2",
     "cors": "^2.8.4",
     "express": "^4.16.3",
