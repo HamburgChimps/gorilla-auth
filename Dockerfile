@@ -6,7 +6,7 @@ COPY . /build
 WORKDIR /build/server
 RUN yarn install --production
 
-FROM mhart/alpine-node:base-8.9
+FROM mhart/alpine-node:8.9
 COPY --from=builder /build/server /app
 COPY --from=tini-stage /sbin/tini /sbin/tini
 

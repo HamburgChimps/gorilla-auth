@@ -1,29 +1,34 @@
-const { User, Group, Grant, Token } = require('../db')
+const { UserConnector, GroupConnector, GrantConnector, TokenConnector } = require('../connectors')
+
+const userConnector = new UserConnector()
+const groupConnector = new GroupConnector()
+const grantConnector = new GrantConnector()
+const tokenConnector = new TokenConnector()
 
 const Query = {
   user (root, args) {
-    return User.find({ where: args })
+    return userConnector.read({ root, query: args })
   },
   allUsers () {
-    return User.findAll()
+    return userConnector.readAll()
   },
   group (root, args) {
-    return Group.find({ where: args })
+    return groupConnector.read({ root, query: args })
   },
   allGroups () {
-    return Group.findAll()
+    return groupConnector.readAll()
   },
   grant (root, args) {
-    return Grant.find({ where: args })
+    return grantConnector.read({ root, query: args })
   },
   allGrants () {
-    return Grant.findAll()
+    return grantConnector.readAll()
   },
   token (root, args) {
-    return Token.find({ where: args })
+    return tokenConnector.read({ root, query: args })
   },
   allTokens () {
-    return Token.findAll()
+    return tokenConnector.readAll()
   }
 }
 

@@ -1,8 +1,8 @@
 const bcrypt = require('bcrypt')
 const { User, Group } = require('../models')
 
-class UserConnect {
-  async create (data) {
+class UserConnector {
+  async create ({ root, args }) {
     const { namespace, name, password, groups } = args
     const encrypted_password = await bcrypt.hash(password, 12)
     const newUser = await User.create({ namespace, name, encrypted_password })
@@ -17,7 +17,7 @@ class UserConnect {
     return newUser
   }
 
-  read (query) {
+  read ({ root, query }) {
     return User.find({ where: query })
   }
 
@@ -33,4 +33,4 @@ class UserConnect {
     return user.getTokens()
   }
 }
-module.exports = UserConnect
+module.exports = UserConnector

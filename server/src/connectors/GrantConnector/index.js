@@ -1,7 +1,7 @@
 const { Grant } = require('../models')
 
 class GrantConnector {
-  read (query) {
+  read ({ root, query }) {
     return Grant.find({ where: query })
   }
 

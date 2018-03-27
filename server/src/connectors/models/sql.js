@@ -8,7 +8,7 @@ const jwt = require('jsonwebtoken')
 
 const db = new Sequelize('auth', null, null, {
   dialect: 'sqlite',
-  storage: './auth.sqlite'
+  storage: './auth.sqlite',
 })
 
 const UserModel = db.define('user', {

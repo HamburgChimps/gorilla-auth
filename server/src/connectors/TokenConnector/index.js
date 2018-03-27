@@ -1,7 +1,7 @@
 const { Token } = require('../models')
 
 class TokenConnector {
-  read (query) {
+  read ({ root, query }) {
     return Token.find({ where: query })
   }
 
