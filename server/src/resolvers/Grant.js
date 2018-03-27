@@ -1,4 +1,4 @@
-const
+const { Grant } = require('../db')
 
 const Grant = {
   owner (grant) {
