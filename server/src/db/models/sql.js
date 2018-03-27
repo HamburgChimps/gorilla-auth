@@ -3,6 +3,9 @@ const bcrypt = require('bcrypt')
 const moment = require('moment')
 const jwt = require('jsonwebtoken')
 
+// TODO
+// Separate the definitions and put them in there respective db Folder
+
 const db = new Sequelize('auth', null, null, {
   dialect: 'sqlite',
   storage: './auth.sqlite'
@@ -21,7 +24,7 @@ const GroupModel = db.define('group', {
 
 const GrantModel = db.define('grant', {
   permission: { type: Sequelize.STRING },
-  ressource: { type: Sequelize.STRING }
+  resource: { type: Sequelize.STRING }
 })
 
 const TokenModel = db.define('token', {

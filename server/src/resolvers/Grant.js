@@ -1,3 +1,5 @@
+const
+
 const Grant = {
   owner (grant) {
     return grant.getGroup()
