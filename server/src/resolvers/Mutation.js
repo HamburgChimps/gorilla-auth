@@ -1,23 +1,11 @@
-const bcrypt = require('bcrypt')
-const { User, Group } = require('../db')
+const { UserConnector, GroupConnector } = require('../connectors')
 
 const Mutation = {
   async createUser (root, args) {
-    const { namespace, name, password, groups } = args
-    const encrypted_password = await bcrypt.hash(password, 12)
-    const newUser = await User.create({ namespace, name, encrypted_password })
-    await Group.findOrCreate({
-      where: {
-        namespace,
-        name
-      }
-    }).spread((group, created) =>{
-      return newUser.addGroup(group)
-    })
-    return newUser
+    return UserConnector.create({ root, args })
   },
-  createGroup (root, args) {
-    return Group.create(args)
+  async createGroup (root, args) {
+    return GroupConnector.create({ root, args })
   }
 }
 module.exports = Mutation

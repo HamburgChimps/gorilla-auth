@@ -1,6 +1,6 @@
 'use strict'
 const { Router } = require('express')
-const { authenticateUserWithPassword } = require('../db')
+const { authenticateUserWithPassword } = require('../connectors')
 
 class AuthRouter extends Router {
   constructor () {
