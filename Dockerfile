@@ -7,7 +7,7 @@ WORKDIR /build/
 RUN yarn install --production --build-from-source
 
 FROM mhart/alpine-node:8.9
-COPY --from=builder /build/ /app
+COPY --from=builder /build /app
 COPY --from=tini-stage /sbin/tini /sbin/tini
 
 WORKDIR /app
