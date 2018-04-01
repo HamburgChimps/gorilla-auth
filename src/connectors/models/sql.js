@@ -6,10 +6,12 @@ const jwt = require('jsonwebtoken')
 // TODO
 // Separate the definitions and put them in there respective db Folder
 
-const db = new Sequelize('auth', null, null, {
-  dialect: 'sqlite',
-  storage: './auth.sqlite',
-})
+// const db = new Sequelize('auth', null, null, {
+//   dialect: 'sqlite',
+//   storage: './auth.sqlite',
+// })
+
+const db = new Sequelize('postgres://user:password@localhost/db')
 
 const UserModel = db.define('user', {
   namespace: { type: Sequelize.STRING },
@@ -110,21 +112,9 @@ const Group = db.models.group
 const Grant = db.models.grant
 const Token = db.models.token
 
-async function authenticateUserWithPassword ({ namespace, name, password }) {
-  try {
-    let authenticated = false
-    const user = await UserModel.findOne({ where: { namespace, name } })
-    authenticated = await bcrypt.compare(password, user.encrypted_password)
-    return authenticated
-  } catch (err) {
-    console.log(err)
-  }
-}
-
 module.exports = {
   User,
   Group,
   Grant,
   Token,
-  authenticateUserWithPassword
 }

@@ -6,7 +6,7 @@ cd $(dirname `[[ $0 = /* ]] && echo "$0" || echo "$PWD/${0#./}"`)
 
 VERSION=$VERSION builder/ensure.sh
 
-docker run --rm -v $(pwd)/server:/app \
+docker run --rm -v $(pwd):/app \
 -w /app/ \
 -e NODE_ENV=$NODE_ENV \
 gorilla/builder:$VERSION ash -c \

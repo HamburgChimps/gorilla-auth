@@ -1,10 +1,30 @@
 version: '3'
 services:
   gorilla-server:
-    build: .
+    image: node:8.9
+    networks:
+      - gorilla
     ports:
      - "9000:9000"
     volumes:
       - .:/app
-    working_dir: /app/server
-    command: node ./
+    working_dir: /app
+    environment:
+      NODE_ENV: dev
+      CONNECTION_STRING_DEV: postgres://user:password@db/db
+    command: node index.js
+    depends_on: 
+      - db
+  db:
+    image: postgres
+    networks:
+      - gorilla
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: user
+      POSTGRES_DB: db
+networks:
+  gorilla:
+    external: false
