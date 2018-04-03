@@ -17,7 +17,7 @@ services:
     volumes:
       - ../../:/app
     working_dir: /app
-    command: bash -c './wait-for.sh db:5432 -- node_modules/.bin/mocha test/integration/**/*.js --timeout 5000 --colors --exit'
+    command: bash -c './wait-for.sh db:5432 -- node_modules/.bin/mocha test/unit/**/*.js --timeout 5000 --colors --exit'
 networks:
   gorilla:
     external: false

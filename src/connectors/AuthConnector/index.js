@@ -1,6 +1,10 @@
 const bcrypt = require('bcrypt')
 const Op = require('sequelize').Op;
 const { User, Grant, Group } = require('../models')
+const mqttRegexBuilder = require( 'mqtt-regex-builder' )
+
+
+
 
 
 class AuthConnector {
@@ -14,19 +18,23 @@ class AuthConnector {
       console.log(err)
     }
   }
-  async authorize({ namespace, user, grant }) {
-    const { permission, resource } = grant
+  async authorize({ namespace, name, grant }) {
+    const { grant_type, data } = grant
     const grants = await Grant.findAll({
       where: {
-        grouId: {
-          [Op.in]: []
-        },
-        permission: permission,
-        resource: {
-          [Op.like]: resource
-        }
-      }
+        grant_type,
+        data
+      },
+      include: [{
+        model: Group,
+        include: [{
+          model: User,
+          as: 'members',
+          where: { namespace, name }
+        }]
+      }]
     })
+    return grants.length >= 1
   }
 }
 module.exports = AuthConnector

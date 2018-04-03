@@ -11,7 +11,7 @@ const jwt = require('jsonwebtoken')
 //   storage: './auth.sqlite',
 // })
 
-const db = new Sequelize('postgres://user:password@localhost/db')
+const db = new Sequelize('postgres://user:password@db/db')
 
 const UserModel = db.define('user', {
   namespace: { type: Sequelize.STRING },
@@ -25,8 +25,8 @@ const GroupModel = db.define('group', {
 })
 
 const GrantModel = db.define('grant', {
-  permission: { type: Sequelize.STRING },
-  resource: { type: Sequelize.STRING }
+  grant_type: { type: Sequelize.STRING },
+  data: { type: Sequelize.JSONB}
 })
 
 const TokenModel = db.define('token', {
@@ -52,69 +52,87 @@ GroupModel.hasMany(GrantModel, {
 })
 GrantModel.belongsTo(GroupModel)
 
-db.sync({ force: true }).then(async () => {
-  const systemAdmin = await UserModel.create({
-    namespace: 'system',
-    name: 'admin',
-    encrypted_password: await bcrypt.hash('admin', 12)
-  })
-  const techUser = await UserModel.create({
-    namespace: 'tech-12345',
-    name: 'admin',
-    encrypted_password: await bcrypt.hash('tech', 12)
-  })
-  const wheelGroup = await systemAdmin.createGroup({
-    namespace: 'system',
-    name: 'wheel'
-  })
-  const systemAdminGroup = await systemAdmin.createGroup({
-    namespace: 'system',
-    name: 'admin',
-  })
-  const techUserGroup = await techUser.createGroup({
-    namespace: 'tech-12345',
-    name: 'admin'
-  })
-
-  await systemAdminGroup.createGrant({
-    permission: 'MQTT_SUBSCRIBE',
-    ressource: '/system/hello'
-  })
-  await systemAdminGroup.createGrant({
-    permission: 'MQTT_PUBLISH',
-    ressource: '/system/hello'
-  })
-  await techUserGroup.createGrant({
-    permission: 'MQTT_SUBSCRIBE',
-    ressource: '/tech-12345/tracks/#'
-  })
-  await techUserGroup.createGrant({
-    permission: 'MQTT_PUBLISH',
-    ressource: '/tech-12345/tracks/hello'
-  })
-  const expireAt = moment().add(7, 'days')
-  const tokenData = {
-    namespace: systemAdmin.namespace,
-    name: systemAdmin.name,
-    context: 'HTTP'
-  }
-  await systemAdmin.createToken({
-    payload: await jwt.sign({
-      exp: expireAt.unix(),
-      data: tokenData
-    }, 'SUPER_SECRET'),
-    expireAt
-  })
-})
 
 const User = db.models.user
 const Group = db.models.group
 const Grant = db.models.grant
 const Token = db.models.token
 
+async function syncDBTest (params) {
+  return db.sync({ force: true }).then(async () => {
+    const systemAdmin = await UserModel.create({
+      namespace: 'system',
+      name: 'admin',
+      encrypted_password: await bcrypt.hash('admin', 12)
+    })
+    const techUser = await UserModel.create({
+      namespace: 'tech-12345',
+      name: 'admin',
+      encrypted_password: await bcrypt.hash('tech', 12)
+    })
+    const wheelGroup = await systemAdmin.createGroup({
+      namespace: 'system',
+      name: 'wheel'
+    })
+    const systemAdminGroup = await systemAdmin.createGroup({
+      namespace: 'system',
+      name: 'admin',
+    })
+    const techUserGroup = await techUser.createGroup({
+      namespace: 'tech-12345',
+      name: 'admin'
+    })
+  
+    await systemAdminGroup.createGrant({
+      grant_type: 'MQTT',
+      data: {
+        permission: 'SUBSCRIBE',
+        resource: { '/': { 'system': { 'hello': '' } } }
+      }
+    })
+    await systemAdminGroup.createGrant({
+      grant_type: 'MQTT',
+      data: {
+        permission: 'PUBLISH',
+        resource: { '/': { 'system': { 'hello': '' } } }
+      }
+    })
+    await techUserGroup.createGrant({
+      grant_type: 'MQTT',
+      data: {
+        permission: 'SUBSCRIBE',
+        resource: { '/': { 'tech-12345': { 'tracks': { '#': '' } } } }
+      }
+    })
+    await techUserGroup.createGrant({
+      grant_type: 'MQTT',
+      data: {
+        permission: 'PUBLISH',
+        resource: { '/': { 'tech-12345': { 'tracks': { '#': '' } } } }
+      }
+
+    })
+    const expireAt = moment().add(7, 'days')
+    const tokenData = {
+      namespace: systemAdmin.namespace,
+      name: systemAdmin.name,
+      context: 'HTTP'
+    }
+    await systemAdmin.createToken({
+      payload: await jwt.sign({
+        exp: expireAt.unix(),
+        data: tokenData
+      }, 'SUPER_SECRET'),
+      expireAt
+    })
+  })
+  
+}
+
 module.exports = {
   User,
   Group,
   Grant,
   Token,
+  syncDBTest
 }
