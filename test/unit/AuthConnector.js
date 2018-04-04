@@ -8,54 +8,52 @@ describe.only('AuthConnector', () => {
   before(async () => {
     await __.models.syncDBTest()
   })
-  it('should allow a valid user with permission to publish (MQTT) on specific topic', async () => {
-    const grant = {
-      grant_type: 'MQTT',
-      data: {
-        permission: 'SUBSCRIBE',
-        resource:'/system/hello'
-      }
+
+  it('should authorize a valid user with permission to connect (MQTT)', async () => {
+    const mqttGrant = {
+        permission: 'CONNECT',
+    }
+    const { isAllowed } = await authConnector.authorizeMQTTConnect({ namespace: 'system', name: 'admin'})
+    assert.isTrue(isAllowed)
+  })
+
+  it('should authorize a valid user with permission to publish (MQTT) on specific topic', async () => {
+    const mqttGrant = {
+        permission: 'PUBLISH',
+        topic:'system/hello'
     }
   
-    const authorized = await authConnector.authorize({ namespace: 'system', name: 'admin', grant })
-    assert.isTrue(authorized)
+    const { isAllowed } = await authConnector.authorizeMQTTPublish({ namespace: 'system', name: 'admin', mqttGrant })
+    assert.isTrue(isAllowed)
   })
+
   it('should deny a valid user with permission to publish (MQTT) on specific topic', async () => {
-    const grant = {
-      grant_type: 'MQTT',
-      data: {
+    const mqttGrant = {
         permission: 'PUBLISH',
-        resource: '/system'
-      }
+        topic: 'system'
     }
    
-    const authorized = await authConnector.authorize({ namespace: 'system', name: 'admin', grant })
-    assert.isFalse(authorized)
+    const { isAllowed } = await authConnector.authorizeMQTTPublish({ namespace: 'system', name: 'admin', mqttGrant })
+    assert.isFalse(isAllowed)
   })
 
-  it('should allow a valid user with permission to subscribe (MQTT) on wildcard topic', async () => {
-    const grant = {
-      grant_type: 'MQTT',
-      data: {
+  it('should authorize a valid user with permission to subscribe (MQTT) on wildcard topic', async () => {
+    const mqttGrants = [{
         permission: 'SUBSCRIBE',
-        resource: '/tech-12345/tracks/#'
-      }
-    }
+        topic: 'tech-12345/tracks/#'
+    }]
    
-    const authorized = await authConnector.authorize({ namespace: 'tech-12345', name: 'admin', grant })
-    assert.isTrue(authorized)
+    const allowedGrants = await authConnector.authorizeMQTTSubscribe({ namespace: 'tech-12345', name: 'admin', mqttGrants })
+    assert.isTrue(allowedGrants[0].isAllowed)
   })
 
-  it('should allow a valid user with permission to subscribe (MQTT) on wildcard topic (subtopic)', async () => {
-    const grant = {
-      grant_type: 'MQTT',
-      data: {
-        permission: 'SUBSCRIBE',
-        resource: '/tech-12345/tracks/hello-goodbye'
-      }
-    }
+  it('should authorize a valid user with permission to subscribe (MQTT) on wildcard topic (subtopic)', async () => {
+    const mqttGrants = [{
+      permission: 'SUBSCRIBE',
+      topic: 'tech-12345/tracks/hello-goodbye'
+    }]
    
-    const authorized = await authConnector.authorize({ namespace: 'tech-12345', name: 'admin', grant })
-    assert.isTrue(authorized)
+    const allowedGrants = await authConnector.authorizeMQTTSubscribe({ namespace: 'tech-12345', name: 'admin', mqttGrants })
+    assert.isTrue(allowedGrants[0].isAllowed)
   })
 })

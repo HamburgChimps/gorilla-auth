@@ -82,33 +82,61 @@ async function syncDBTest (params) {
       namespace: 'tech-12345',
       name: 'admin'
     })
+
+    await wheelGroup.createGrant({
+      grant_type: 'MQTT',
+      data: {
+        permission: 'CONNECT',
+      }
+    })
+
+    await wheelGroup.createGrant({
+      grant_type: 'MQTT',
+      data: {
+        permission: 'SUBSCRIBE',
+        topic:'#'
+      }
+    })
   
     await systemAdminGroup.createGrant({
       grant_type: 'MQTT',
       data: {
+        permission: 'CONNECT',
+      }
+    })
+    await systemAdminGroup.createGrant({
+      grant_type: 'MQTT',
+      data: {
         permission: 'SUBSCRIBE',
-        resource: { '/': { 'system': { 'hello': '' } } }
+        topic:'system/hello'
       }
     })
     await systemAdminGroup.createGrant({
       grant_type: 'MQTT',
       data: {
         permission: 'PUBLISH',
-        resource: { '/': { 'system': { 'hello': '' } } }
+        topic:'system/hello'
+      }
+    })
+
+    await techUserGroup.createGrant({
+      grant_type: 'MQTT',
+      data: {
+        permission: 'CONNECT',
       }
     })
     await techUserGroup.createGrant({
       grant_type: 'MQTT',
       data: {
         permission: 'SUBSCRIBE',
-        resource: { '/': { 'tech-12345': { 'tracks': { '#': '' } } } }
+        topic: 'tech-12345/tracks/#'
       }
     })
     await techUserGroup.createGrant({
       grant_type: 'MQTT',
       data: {
         permission: 'PUBLISH',
-        resource: { '/': { 'tech-12345': { 'tracks': { '#': '' } } } }
+        topic: 'tech-12345/tracks/#'
       }
 
     })

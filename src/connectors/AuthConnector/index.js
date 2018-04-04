@@ -4,9 +4,6 @@ const { User, Grant, Group } = require('../models')
 const mqttRegexBuilder = require( 'mqtt-regex-builder' )
 
 
-
-
-
 class AuthConnector {
   async authenticateUserWithPassword ({ namespace, name, password }) {
     try {
@@ -18,23 +15,96 @@ class AuthConnector {
       console.log(err)
     }
   }
-  async authorize({ namespace, name, grant }) {
-    const { grant_type, data } = grant
-    const grants = await Grant.findAll({
+
+  async authorizeMQTTConnect({ namespace, name}) {
+    const userGrants = await Grant.findAll({
       where: {
-        grant_type,
-        data
+        grant_type: 'MQTT',
+        data: { permission: 'CONNECT' }
       },
       include: [{
         model: Group,
+        required: true,
         include: [{
           model: User,
           as: 'members',
+          required: true,
           where: { namespace, name }
         }]
       }]
     })
-    return grants.length >= 1
+    if (userGrants.length > 0) {
+      return { isAllowed: true }
+    }
+    return { isAllowed: false }
+  }
+
+  async authorizeMQTTSubscribe({ namespace, name, mqttGrants }) {
+    const userGrants = await Grant.findAll({
+      where: {
+        grant_type: 'MQTT',
+        data: { permission: 'SUBSCRIBE' }
+      },
+      include: [{
+        model: Group,
+        required: true,
+        include: [{
+          model: User,
+          as: 'members',
+          required: true,
+          where: { namespace, name }
+        }]
+      }]
+    })
+    
+    return mqttGrants.map((grant) => {
+      const grantFound = userGrants.find((userGrant) => {
+        if (userGrant.data.topic === grant.topic) {
+          return true
+        }
+        const topicRegex = mqttRegexBuilder(userGrant.data.topic)
+        const match = topicRegex.exec(grant.topic)
+        if (match && match.length > 0) {
+          return true
+        }
+      })
+      if (grantFound) {
+        return { isAllowed: true, grant }
+      }
+      return { isAllowed: false, grant }
+    })
+  }
+  async authorizeMQTTPublish({ namespace, name, mqttGrant }) {
+    const userGrants = await Grant.findAll({
+      where: {
+        grant_type: 'MQTT',
+        data: { permission: 'PUBLISH' }
+      },
+      include: [{
+        model: Group,
+        required: true,
+        include: [{
+          model: User,
+          as: 'members',
+          required: true,
+          where: { namespace, name }
+        }]
+      }]
+    })
+    const grantFound = userGrants.find((userGrant) => {
+      if (userGrant.data.topic === mqttGrant.topic) {
+        return true
+      }
+      const topicRegex = mqttRegexBuilder(userGrant.data.topic)
+      const match = topicRegex.exec(mqttGrant.topic)
+      if (match && match.length > 0) {
+        return true
+      }
+    })
+    if (grantFound) {
+      return { isAllowed: true, mqttGrant }
+    }
+    return { isAllowed: false, mqttGrant }
   }
 }
 module.exports = AuthConnector
