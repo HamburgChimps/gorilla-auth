@@ -1,12 +1,13 @@
 
 /* global describe, it , before */
-var { assert } = require('chai')
+const { assert } = require('chai')
+const { syncDBTest } = require('../fixtures/SetupDB')
 const { AuthConnector , __ } = require('../../src/connectors')
 
 describe.only('AuthConnector', () => {
   const authConnector = new AuthConnector()
   before(async () => {
-    await __.models.syncDBTest()
+    await syncDBTest(__.models)
   })
 
   it('should authorize a valid user with permission to connect (MQTT)', async () => {
