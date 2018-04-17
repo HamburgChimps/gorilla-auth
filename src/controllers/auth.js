@@ -1,8 +1,9 @@
 'use strict'
 const { Router } = require('express')
-const { authenticateUserWithPassword } = require('../connectors')
+const { AuthConnector } = require('../connectors')
+const authConnector = new AuthConnector()
 
-class AuthRouter extends Router {
+class AuthRouter extends Router {  
   constructor () {
     super()
 
@@ -12,14 +13,20 @@ class AuthRouter extends Router {
 
     this.post('/broker/auth_on_register', async (req, res) => {
       try {
-        const {username, password} = req.body
+        const { username, password } = req.body
         let authenticated = false
-        authenticated = await authenticateUserWithPassword({
+        authenticated = await authConnector.authenticateUserWithPassword({
           namespace: 'system',
           name: username,
           password
         })
-        if (authenticated) res.status(200).send({ result: 'OK' })
+        if (authenticated) {
+          const authorized = await authConnector.authorizeMQTTConnect({
+            namespace: 'system',
+            name: username,
+          })
+          if (authorized) res.status(200).send({ result: 'OK' })
+        }
         res.status(200).send({ result: { error: 'FORBIDDEN' } })
       } catch (err) {
         console.log(err)
@@ -30,9 +37,13 @@ class AuthRouter extends Router {
     this.post('/broker/auth_on_subscribe', async (req, res) => {
       try {
         const { username, client_id, topics } = req.body
-        console.log(username, client_id)
-        console.log(topics)
-        res.status(200).send({ result: 'OK' })
+        const authorized = authConnector.authorizeMQTTSubscribe({
+          namespace: 'system',
+          name: username,
+          mqttGrants: topics
+        })
+        if (authorized) res.status(200).send({ result: 'OK' })
+        res.status(200).send({ error: 'FORBIDDEN' })
       } catch (err) {
         console.log(err)
         res.status(200).send({ msg: 'Error not able to authenticate', err })
@@ -42,9 +53,13 @@ class AuthRouter extends Router {
     this.post('/broker/auth_on_publish', async (req, res) => {
       try {
         const {username, client_id, topic} = req.body
-        console.log(username, client_id)
-        console.log(topic)
-        res.status(200).send({ result: 'OK' })
+        const authorized = authConnector.authorizeMQTTPublish({
+          namespace: 'system',
+          name: username,
+          mqttGrant: topic
+        })
+        if (authorized) res.status(200).send({ result: 'OK' })
+        res.status(200).send({ error: 'FORBIDDEN' })
       } catch (err) {
         console.log(err)
         res.status(200).send({ msg: 'Error not able to authenticate', err })
