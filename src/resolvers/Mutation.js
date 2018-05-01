@@ -8,4 +8,5 @@ const Mutation = {
     return GroupConnector.create({ root, args })
   }
 }
+
 module.exports = Mutation
