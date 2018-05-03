@@ -3,7 +3,7 @@ const { Router } = require('express')
 const { AuthConnector } = require('../connectors')
 const authConnector = new AuthConnector()
 
-class AuthRouter extends Router {  
+class AuthRouter extends Router {
   constructor () {
     super()
 

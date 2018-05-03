@@ -4,8 +4,7 @@ const bodyParser = require('body-parser')
 const cors = require('cors')
 const schema = require('./schema')
 const { AuthRouter } = require('./controllers')
-const plugins = require('../plugins')
-console.log(plugins)
+const connectPlugins = require('../plugins')
 
 class Server {
   constructor (port = 9000, dev = false) {
@@ -37,7 +36,7 @@ class Server {
   }
 
   _setupPlugins () {
-    for (let plugin of plugins) {
+    for (let plugin of connectPlugins(`localhost:/${this._port}/graphql`)) {
       this._server.use('/', plugin)
     }
   }
