@@ -4,24 +4,27 @@ const bodyParser = require('body-parser')
 const cors = require('cors')
 const schema = require('./schema')
 const { AuthRouter } = require('./controllers')
+const plugins = require('../plugins')
+console.log(plugins)
 
 class Server {
   constructor (port = 9000, dev = false) {
     this._server = express()
     this._port = port
     this._dev = dev
-    this.setupMiddleware()
-    this.setupGraphQL()
-    this.setupAuthEndpoints()
+    this._setupMiddleware()
+    this._setupGraphQL()
+    this._setupAuthEndpoints()
+    this._setupPlugins()
   }
 
-  setupMiddleware () {
+  _setupMiddleware () {
     this._server.use(bodyParser.json())
     this._server.use(bodyParser.urlencoded({ extended: false }))
     this._server.use(cors())
   }
 
-  setupGraphQL () {
+  _setupGraphQL () {
     this._server.use('/graphql', graphqlExpress({ schema }))
     // If application is in dev environment
     if (this._dev) {
@@ -29,8 +32,14 @@ class Server {
     }
   }
 
-  setupAuthEndpoints () {
+  _setupAuthEndpoints () {
     this._server.use('/auth', new AuthRouter())
+  }
+
+  _setupPlugins () {
+    for (let plugin of plugins) {
+      this._server.use('/', plugin)
+    }
   }
 
   start () {

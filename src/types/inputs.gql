@@ -1,0 +1,25 @@
+input CreateUserInput {
+  namespace: String!
+  Wname: String!
+}
+
+type CreateUserPayload {
+  id: Int!
+  namespace: String!
+  name: String!
+  groups: [Group]
+  tokens: [Token]
+}
+
+input CreateGroupInput {
+  namespace: String!
+  name: String!
+}
+
+type CreateGroupPayload {
+  id: Int!
+  namespace: String!
+  name: String!
+  groups: [Group]
+  tokens: [Token]
+}
