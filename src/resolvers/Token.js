@@ -3,4 +3,5 @@ const Token = {
     return token.getUser()
   }
 }
+
 module.exports = Token

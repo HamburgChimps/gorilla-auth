@@ -3,4 +3,5 @@ const Grant = {
     return grant.getGroup()
   }
 }
+
 module.exports = Grant

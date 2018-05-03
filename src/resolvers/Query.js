@@ -1,4 +1,10 @@
-const { UserConnector, GroupConnector, GrantConnector, TokenConnector , AuthConnector} = require('../connectors')
+const {
+  UserConnector,
+  GroupConnector,
+  GrantConnector,
+  TokenConnector,
+  AuthConnector
+} = require('../connectors')
 
 const userConnector = new UserConnector()
 const groupConnector = new GroupConnector()
@@ -31,7 +37,7 @@ const Query = {
   allTokens () {
     return tokenConnector.readAll()
   },
-  login(root, args) {
+  login (root, args) {
     return authConnector.authenticateUserWithPassword(args)
   }
 }

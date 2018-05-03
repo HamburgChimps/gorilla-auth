@@ -1,8 +1,7 @@
 const bcrypt = require('bcrypt')
-const Op = require('sequelize').Op;
+const { Op } = require('sequelize')
 const { User, Grant, Group } = require('../models')
-const mqttRegexBuilder = require( 'mqtt-regex-builder' )
-
+const mqttRegexBuilder = require('mqtt-regex-builder')
 
 class AuthConnector {
   async authenticateUserWithPassword ({ namespace, name, password }) {
@@ -16,7 +15,7 @@ class AuthConnector {
     }
   }
 
-  async authorizeMQTTConnect({ namespace, name}) {
+  async authorizeMQTTConnect ({ namespace, name }) {
     const userGrants = await Grant.findAll({
       where: {
         grant_type: 'MQTT',
@@ -39,7 +38,7 @@ class AuthConnector {
     return { isAllowed: false }
   }
 
-  async authorizeMQTTSubscribe({ namespace, name, mqttGrants }) {
+  async authorizeMQTTSubscribe ({ namespace, name, mqttGrants }) {
     const userGrants = await Grant.findAll({
       where: {
         grant_type: 'MQTT',
@@ -56,7 +55,7 @@ class AuthConnector {
         }]
       }]
     })
-    
+
     return mqttGrants.map((grant) => {
       const grantFound = userGrants.find((userGrant) => {
         if (userGrant.data.topic === grant.topic) {
@@ -74,7 +73,7 @@ class AuthConnector {
       return { isAllowed: false, grant }
     })
   }
-  async authorizeMQTTPublish({ namespace, name, mqttGrant }) {
+  async authorizeMQTTPublish ({ namespace, name, mqttGrant }) {
     const userGrants = await Grant.findAll({
       where: {
         grant_type: 'MQTT',
