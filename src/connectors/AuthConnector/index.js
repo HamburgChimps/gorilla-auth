@@ -8,6 +8,7 @@ class AuthConnector {
     try {
       let authenticated = false
       const user = await User.findOne({ where: { namespace, name } })
+      if (!user) return false
       authenticated = await bcrypt.compare(password, user.encrypted_password)
       return authenticated
     } catch (err) {

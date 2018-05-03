@@ -23,6 +23,26 @@ services:
     command: bash -c './wait-for.sh db:5432 -- node index.js'
     depends_on: 
       - db
+  broker:
+    image: erlio/docker-vernemq:1.3.0
+    networks:
+      - gorilla
+    ports:
+     - "1883:1883"
+     - "8888:8888"
+    environment:
+      DOCKER_VERNEMQ_LOG.console.level: info
+      DOCKER_VERNEMQ_PLUGINS.vmq_acl: "off"
+      DOCKER_VERNEMQ_PLUGINS.vmq_passwd: "off"
+      DOCKER_VERNEMQ_PLUGINS.vmq_webhooks: "on"
+      DOCKER_VERNEMQ_VMQ_WEBHOOKS.webhook1.hook: "auth_on_register"
+      DOCKER_VERNEMQ_VMQ_WEBHOOKS.webhook2.hook: "auth_on_publish"
+      DOCKER_VERNEMQ_VMQ_WEBHOOKS.webhook3.hook: "auth_on_subscribe"
+      DOCKER_VERNEMQ_VMQ_WEBHOOKS.webhook1.endpoint: "http://gorilla-server:9000/auth/broker/auth_on_register"
+      DOCKER_VERNEMQ_VMQ_WEBHOOKS.webhook2.endpoint: "http://gorilla-server:9000/auth/broker/auth_on_publish"
+      DOCKER_VERNEMQ_VMQ_WEBHOOKS.webhook3.endpoint: "http://gorilla-server:9000/auth/broker/auth_on_subscribe"
+    depends_on: 
+      - gorilla-server
 networks:
   gorilla:
     external: false
