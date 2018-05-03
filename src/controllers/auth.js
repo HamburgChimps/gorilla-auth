@@ -12,8 +12,9 @@ class AuthRouter extends Router {
     })
 
     this.post('/broker/auth_on_register', async (req, res) => {
+      console.log('on_register')
       try {
-        const { username, password } = req.body
+        const { username, password, client_id } = req.body
         let authenticated = false
         authenticated = await authConnector.authenticateUserWithPassword({
           namespace: 'system',
@@ -21,13 +22,24 @@ class AuthRouter extends Router {
           password
         })
         if (authenticated) {
-          const authorized = await authConnector.authorizeMQTTConnect({
+          const { isAllowed } = await authConnector.authorizeMQTTConnect({
             namespace: 'system',
             name: username,
           })
-          if (authorized) res.status(200).send({ result: 'OK' })
+          if (isAllowed) {
+            res.status(200).send({
+              result: 'ok',
+              modifiers: {
+                client_id,
+                mountpoint: ''
+              }
+            })
+            console.log('authorized')
+            return
+          }
         }
         res.status(200).send({ result: { error: 'FORBIDDEN' } })
+        console.log('FORBIDDEN')
       } catch (err) {
         console.log(err)
         res.status(200).send({ msg: 'Error not able to authenticate', err })
@@ -35,15 +47,28 @@ class AuthRouter extends Router {
     })
 
     this.post('/broker/auth_on_subscribe', async (req, res) => {
+      console.log('subscribe')
       try {
         const { username, client_id, topics } = req.body
-        const authorized = authConnector.authorizeMQTTSubscribe({
+        console.log(req.body)
+        const authorizedTopics = await authConnector.authorizeMQTTSubscribe({
           namespace: 'system',
           name: username,
           mqttGrants: topics
         })
-        if (authorized) res.status(200).send({ result: 'OK' })
-        res.status(200).send({ error: 'FORBIDDEN' })
+        if (authorizedTopics.length > 0) {
+          const topics = authorizedTopics.map(({isAllowed, grant}) => {
+            if (!isAllowed) {
+              grant.qos = 128
+            }
+            return grant
+          })
+          res.status(200).send({ result: 'ok' , topics})
+          console.log('authorized')
+          return
+        }
+        res.status(200).send({ result: { error: 'FORBIDDEN' } })
+        console.log('FORBIDDEN')
       } catch (err) {
         console.log(err)
         res.status(200).send({ msg: 'Error not able to authenticate', err })
@@ -51,15 +76,21 @@ class AuthRouter extends Router {
     })
 
     this.post('/broker/auth_on_publish', async (req, res) => {
+      console.log('publish')
       try {
-        const {username, client_id, topic} = req.body
-        const authorized = authConnector.authorizeMQTTPublish({
+        const {username, client_id, topic, qos} = req.body
+        const { isAllowed } = await authConnector.authorizeMQTTPublish({
           namespace: 'system',
           name: username,
-          mqttGrant: topic
+          mqttGrant: { topic, qos }
         })
-        if (authorized) res.status(200).send({ result: 'OK' })
-        res.status(200).send({ error: 'FORBIDDEN' })
+        if (isAllowed) {
+          res.status(200).send({ result: 'ok' })
+          console.log('authorized')
+          return
+        }
+        res.status(200).send({ result: { error: 'FORBIDDEN' } })
+        console.log('FORBIDDEN')
       } catch (err) {
         console.log(err)
         res.status(200).send({ msg: 'Error not able to authenticate', err })
