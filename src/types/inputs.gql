@@ -23,3 +23,13 @@ type CreateGroupPayload {
   groups: [Group]
   tokens: [Token]
 }
+
+type LoginIntoMqttPayload {
+  result: String!
+  modifers: Modifer
+}
+
+type Modifer {
+  client_id: String
+  mountpoint: String
+}

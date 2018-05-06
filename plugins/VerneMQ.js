@@ -9,30 +9,27 @@ class Cybus extends Router {
 
     this.post('/broker/auth_on_register', async (req, res) => {
       const { username, password, client_id } = req.body
-      try {
-        const authenticated = await login({ client, username, password })
-        if (!authenticated) res.status(200).send({ result: { error: 'FORBIDDEN' } })
-        res.status(200).send({ msg: 'Route setup' })
-      } catch (err) {
-        res.status(200).send({ msg: 'Error not able to authenticate', err })
+      const query = `
+      {
+        loginIntoMqtt(
+          namespace: "system",
+          name: "${username}",
+          password: "${password}",
+          client_id: "${client_id}"
+        ) {
+          result
+          modifiers {
+            client_id
+            mountpoint
+          }
+        }
       }
+      `
+      const { data, errors } = await client({ query })
+      if (errors) res.status(200).send({ msg: 'Error not able to authenticate', errors })
+      else res.status(200).send(data)
     })
   }
-}
-
-async function login ({
-  client,
-  username,
-  password
-}) {
-  const query = `
-  {
-    login(namespace: "system", name: "${username}", password: "${password}")
-  }
-  `
-  const { data, errors } = await client({ query })
-  if (errors) throw errors
-  return data
 }
 
 module.exports = Cybus

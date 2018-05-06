@@ -12,4 +12,5 @@ type Query {
   allTokens: [Token]
 
   login(namespace: String, name: String, password: String): Boolean
+  loginIntoMqtt(namespace: String, username: String, password: String, client_id: String): LoginIntoMqttPayload
 }
