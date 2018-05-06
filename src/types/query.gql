@@ -11,5 +11,5 @@ type Query {
   token(id: Int): Token
   allTokens: [Token]
 
-  login(namespace: String, name: String, password: String): String
+  login(namespace: String, name: String, password: String): Boolean
 }

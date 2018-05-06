@@ -24,7 +24,7 @@ class AuthRouter extends Router {
         if (authenticated) {
           const { isAllowed } = await authConnector.authorizeMQTTConnect({
             namespace: 'system',
-            name: username,
+            name: username
           })
           if (isAllowed) {
             res.status(200).send({
