@@ -1,9 +1,11 @@
-const { Router } = require('express')
 const { readdirSync } = require('fs')
-const pluginPaths = readdirSync(__dirname).filter(path => !path.includes('index.js'))
 
 function connectPlugins (graphqlUri) {
-  pluginPaths.map(path => new require(`${__dirname}/${path}`))(graphqlUri)
+  const pluginPaths = readdirSync(__dirname).filter(path => !path.includes('index.js'))
+  return pluginPaths.map(path => {
+    const Constructor = require(`${__dirname}/${path}`)
+    return new Constructor(graphqlUri)
+  })
 }
 
 module.exports = connectPlugins
