@@ -2,15 +2,13 @@ const {
   UserConnector,
   GroupConnector,
   GrantConnector,
-  TokenConnector,
-  AuthConnector
+  TokenConnector
 } = require('../connectors')
 
 const userConnector = new UserConnector()
 const groupConnector = new GroupConnector()
 const grantConnector = new GrantConnector()
 const tokenConnector = new TokenConnector()
-const authConnector = new AuthConnector()
 
 const Query = {
   user (root, args) {
@@ -36,25 +34,6 @@ const Query = {
   },
   allTokens () {
     return tokenConnector.readAll()
-  },
-  login (root, args) {
-    return authConnector.authenticateUserWithPassword(args)
-  },
-  async loginIntoMqtt (root, args) {
-    const authenticated = await authConnector.authenticateUserWithPassword(args)
-    if (!authenticated) return { result: 'FORBIDDEN' }
-    const { isAllowed } = await authConnector.authorizeMQTTConnect(args)
-    if (isAllowed) {
-      return {
-        result: 'ok',
-        modifiers: {
-          client_id: args.client_id,
-          mountpoint: ''
-        }
-      }
-    } else {
-      return { result: 'FORBIDDEN' }
-    }
   }
 }
 

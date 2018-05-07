@@ -1,4 +1,11 @@
 type Mutation {
+  login(input: LoginInput): Boolean
+  loginIntoMqtt(input: LoginIntoMqttInput): LoginIntoMqttPayload
+
+  subscribeAuth(input: SubscribeAuthInput): SubscribeAuthPayload
+
+  publishAuth(input: PublishAuthInput): PublishAuthPayload
+
   createUser(input: CreateUserInput): CreateUserPayload
   createGroup(input: CreateGroupInput): CreateGroupPayload
 }

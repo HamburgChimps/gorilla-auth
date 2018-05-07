@@ -1,3 +1,4 @@
+# Create User
 input CreateUserInput {
   namespace: String!
   Wname: String!
@@ -11,6 +12,7 @@ type CreateUserPayload {
   tokens: [Token]
 }
 
+# Create Group
 input CreateGroupInput {
   namespace: String!
   name: String!
@@ -24,6 +26,14 @@ type CreateGroupPayload {
   tokens: [Token]
 }
 
+# Login Into Mqtt Payload
+input LoginIntoMqttInput {
+  namespace: String
+  username: String
+  password: String
+  client_id: String
+}
+
 type LoginIntoMqttPayload {
   result: String!
   modifers: Modifer
@@ -32,4 +42,34 @@ type LoginIntoMqttPayload {
 type Modifer {
   client_id: String
   mountpoint: String
+}
+
+# Login
+input LoginInput {
+  namespace: String!
+  name: String!
+  password: String!
+}
+
+# Subscribe
+input SubscribeAuthInput {
+  username: String!
+  topics: [String]!
+}
+
+type SubscribeAuthPayload {
+  result: String!
+  modifers: Modifer
+  topics: [String]!
+}
+
+# Publish
+input PublishAuthInput {
+  username: String
+  topic: String
+  qos: Int
+}
+
+type PublishAuthPayload {
+  result: String!
 }
