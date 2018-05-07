@@ -36,10 +36,10 @@ input LoginIntoMqttInput {
 
 type LoginIntoMqttPayload {
   result: String!
-  modifers: Modifer
+  modifiers: Modifier
 }
 
-type Modifer {
+type Modifier {
   client_id: String
   mountpoint: String
 }
@@ -59,7 +59,7 @@ input SubscribeAuthInput {
 
 type SubscribeAuthPayload {
   result: String!
-  modifers: Modifer
+  modifiers: Modifier
   topics: [String]!
 }
 

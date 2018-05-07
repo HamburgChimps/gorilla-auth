@@ -7,13 +7,14 @@ class Cybus extends Router {
     super()
     const client = createApolloFetch({ uri: graphqlUri })
 
-    this.post('/broker/auth_on_register', async (req, res) => {
+    this.post('/auth/broker/auth_on_register', async (req, res) => {
+      console.log('Register')
       const { username, password, client_id } = req.body
       const query = `
       mutation {
         loginIntoMqtt(input: {
           namespace: "system",
-          name: "${username}",
+          username: "${username}",
           password: "${password}",
           client_id: "${client_id}"
         }) {
@@ -26,11 +27,16 @@ class Cybus extends Router {
       }
       `
       const { data, errors } = await client({ query })
-      if (errors) res.status(200).send({ msg: 'Error not able to authenticate', errors })
-      else res.status(200).send(data)
+      if (errors) {
+        console.log('Error', errors)
+        res.status(200).send({ msg: 'Error not able to authenticate', errors })
+      } else {
+        res.status(200).send(data)
+      }
     })
 
-    this.post('/broker/auth_on_subscribe', async (req, res) => {
+    this.post('/auth/broker/auth_on_subscribe', async (req, res) => {
+      console.log('Subscribe')
       const { username, topics } = req.body
       const query = `
       mutation {
@@ -44,11 +50,16 @@ class Cybus extends Router {
       }
       `
       const { data, errors } = await client({ query })
-      if (errors) res.status(200).send({ msg: 'Error not able to authenticate', errors })
-      else res.status(200).send(data)
+      if (errors) {
+        console.log('Error', errors)
+        res.status(200).send({ msg: 'Error not able to authenticate', errors })
+      } else {
+        res.status(200).send(data)
+      }
     })
 
-    this.post('/broker/auth_on_publish', async (req, res) => {
+    this.post('/auth/broker/auth_on_publish', async (req, res) => {
+      console.log('Publish')
       const { username, topic, qos } = req.body
       const query = `
       mutation {
@@ -62,8 +73,12 @@ class Cybus extends Router {
       }
       `
       const { data, errors } = await client({ query })
-      if (errors) res.status(200).send({ msg: 'Error not able to authenticate', errors })
-      else res.status(200).send(data)
+      if (errors) {
+        console.log('Error', errors)
+        res.status(200).send({ msg: 'Error not able to authenticate', errors })
+      } else {
+        res.status(200).send(data)
+      }
     })
   }
 }

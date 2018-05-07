@@ -3,7 +3,7 @@ const { graphqlExpress, graphiqlExpress } = require('apollo-server-express')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const schema = require('./schema')
-const { AuthRouter } = require('./controllers')
+// const { AuthRouter } = require('./controllers')
 const connectPlugins = require('../plugins')
 
 class Server {
@@ -32,12 +32,12 @@ class Server {
   }
 
   _setupAuthEndpoints () {
-    this._server.use('/auth', new AuthRouter())
+    // this._server.use('/auth', new AuthRouter())
   }
 
-  _setupPlugins () {
-    for (let plugin of connectPlugins(`localhost:/${this._port}/graphql`)) {
-      this._server.use('/', plugin)
+  async _setupPlugins () {
+    for (let plugin of await connectPlugins(`http://localhost:${this._port}/graphql`)) {
+      this._server.use(await plugin)
     }
   }
 
