@@ -1,24 +1,24 @@
 const {
-  UserConnector,
-  GroupConnector,
-  AuthConnector
+  user,
+  group,
+  auth
 } = require('../connectors')
-const authConnector = new AuthConnector()
 
 const Mutation = {
   async createUser (root, args) {
-    return UserConnector.create({ root, args })
+    console.log(user)
+    return user.create({ root, args })
   },
   async createGroup (root, args) {
-    return GroupConnector.create({ root, args })
+    return group.create({ root, args })
   },
   login (root, args) {
-    return authConnector.authenticateUserWithPassword(args)
+    return auth.authenticateUserWithPassword(args)
   },
   async loginIntoMqtt (root, args) {
-    const authenticated = await authConnector.authenticateUserWithPassword(args)
+    const authenticated = await auth.authenticateUserWithPassword(args)
     if (!authenticated) return { result: 'FORBIDDEN' }
-    const { isAllowed } = await authConnector.authorizeMQTTConnect(args)
+    const { isAllowed } = await auth.authorizeMQTTConnect(args)
     if (isAllowed) {
       return {
         result: 'ok',
@@ -33,7 +33,7 @@ const Mutation = {
   },
   async subscribeAuth (root, args) {
     const { username, topics, namespace } = args
-    const authorizedTopics = await authConnector.authorizeMQTTSubscribe({
+    const authorizedTopics = await auth.authorizeMQTTSubscribe({
       namespace,
       name: username,
       mqttGrants: topics
@@ -48,7 +48,7 @@ const Mutation = {
   },
   async publishAuth (root, args) {
     const { username, topic, qos, namespace } = args
-    const { isAllowed } = await authConnector.authorizeMQTTPublish({
+    const { isAllowed } = await auth.authorizeMQTTPublish({
       namespace,
       name: username,
       mqttGrant: { topic, qos }

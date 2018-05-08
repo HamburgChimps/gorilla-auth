@@ -1,11 +1,12 @@
 # Create User
 input CreateUserInput {
   namespace: String!
-  Wname: String!
+  name: String!
+  password: String!
 }
 
 type CreateUserPayload {
-  id: Int!
+  id: ID!
   namespace: String!
   name: String!
   groups: [Group]
@@ -19,7 +20,7 @@ input CreateGroupInput {
 }
 
 type CreateGroupPayload {
-  id: Int!
+  id: ID!
   namespace: String!
   name: String!
   groups: [Group]

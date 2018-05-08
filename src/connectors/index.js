@@ -6,11 +6,11 @@ const AuthConnector = require('./Auth')
 const models = require('./models')
 
 module.exports = {
-  GrantConnector,
-  GroupConnector,
-  TokenConnector,
-  UserConnector,
-  AuthConnector,
+  grant: new GrantConnector(),
+  group: new GroupConnector(),
+  token: new TokenConnector(),
+  user: new UserConnector(),
+  auth: new AuthConnector(),
   __: {
     models
   }

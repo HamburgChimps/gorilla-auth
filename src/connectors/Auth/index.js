@@ -107,4 +107,5 @@ class AuthConnector {
     return { isAllowed: false, mqttGrant }
   }
 }
+
 module.exports = AuthConnector

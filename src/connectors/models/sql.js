@@ -1,9 +1,7 @@
+const Postgres = require('../utils/Postgres')
 const { Sequelize } = require('sequelize')
 
-// TODO
-// Separate the definitions and put them in there respective db Folder
-
-const db = new Sequelize('postgres://user:password@db/db')
+const db = Postgres.init()
 
 const UserModel = db.define('user', {
   namespace: { type: Sequelize.STRING },
@@ -16,9 +14,9 @@ const GroupModel = db.define('group', {
   name: { type: Sequelize.STRING }
 })
 
-const GrantModel = db.define('grant', {
-  grant_type: { type: Sequelize.STRING },
-  data: { type: Sequelize.JSONB}
+UserModel.belongsToMany(db.models.group, {
+  through: 'User_Group',  // this can be string or a model,
+  foreignKey: 'User_userId'
 })
 
 const TokenModel = db.define('token', {
@@ -26,24 +24,23 @@ const TokenModel = db.define('token', {
   expireAt: { type: Sequelize.DATE }
 })
 
-UserModel.belongsToMany(GroupModel, {
-  through: 'User_Group',  //this can be string or a model,
-  foreignKey: 'User_userId'
+UserModel.hasMany(db.models.token)
+
+const GrantModel = db.define('grant', {
+  grant_type: { type: Sequelize.STRING },
+  data: { type: Sequelize.JSONB }
 })
-UserModel.hasMany(TokenModel)
 
-TokenModel.belongsTo(UserModel)
+TokenModel.belongsTo(db.models.user)
 
-GroupModel.belongsToMany(UserModel, {
+GroupModel.belongsToMany(db.models.user, {
   as: 'members',
-  through: 'User_Group',  //this can be string or a model,
+  through: 'User_Group',  // this can be string or a model,
   foreignKey: 'Group_groupId'
 })
-GroupModel.hasMany(GrantModel, {
 
-})
+GroupModel.hasMany(GrantModel, {})
 GrantModel.belongsTo(GroupModel)
-
 
 const User = db.models.user
 const Group = db.models.group
