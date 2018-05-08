@@ -22,7 +22,6 @@ type Group {
   members: [User]
 }
 
-
 type Grant {
   id: Int
   owner: Group

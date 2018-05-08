@@ -54,20 +54,23 @@ input LoginInput {
 # Subscribe
 input SubscribeAuthInput {
   username: String!
+  namespace: String!
   topics: [String]!
 }
 
 type SubscribeAuthPayload {
   result: String!
+  namespace: String!
   modifiers: Modifier
   topics: [String]!
 }
 
 # Publish
 input PublishAuthInput {
-  username: String
-  topic: String
-  qos: Int
+  username: String!
+  namespace: String!
+  topic: String!
+  qos: Int!
 }
 
 type PublishAuthPayload {

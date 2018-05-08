@@ -2,8 +2,8 @@ const bcrypt = require('bcrypt')
 const { User, Group } = require('../models')
 
 class UserConnector {
-  async create ({ root, args }) {
-    const { namespace, name, password, groups } = args
+  async create ({ root, args: { input } }) {
+    const { namespace, name, password, groups } = input
     const encrypted_password = await bcrypt.hash(password, 12)
     const newUser = await User.create({ namespace, name, encrypted_password })
     await Group.findOrCreate({

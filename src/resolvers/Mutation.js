@@ -32,9 +32,9 @@ const Mutation = {
     }
   },
   async subscribeAuth (root, args) {
-    const { username, topics } = args
+    const { username, topics, namespace } = args
     const authorizedTopics = await authConnector.authorizeMQTTSubscribe({
-      namespace: 'system',
+      namespace,
       name: username,
       mqttGrants: topics
     }).map(({ isAllowed, grant }) => {
@@ -47,9 +47,9 @@ const Mutation = {
     }
   },
   async publishAuth (root, args) {
-    const { username, topic, qos } = args
+    const { username, topic, qos, namespace } = args
     const { isAllowed } = await authConnector.authorizeMQTTPublish({
-      namespace: 'system',
+      namespace,
       name: username,
       mqttGrant: { topic, qos }
     })

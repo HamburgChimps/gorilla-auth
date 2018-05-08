@@ -41,6 +41,7 @@ class Cybus extends Router {
       const query = `
       mutation {
         subscribeAuth(input: {
+          namespace: "namespace",
           username: ${username}
           topics: ${topics}
         }) {
@@ -64,6 +65,7 @@ class Cybus extends Router {
       const query = `
       mutation {
         publishAuth(input: {
+          namespace: "namespace",
           username: ${username}
           topic: ${topic},
           qos: ${qos}

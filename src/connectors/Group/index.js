@@ -1,8 +1,8 @@
 const { Group } = require('../models')
 
 class GroupConnector {
-  async create ({ root, args }) {
-    return Group.create(args)
+  async create ({ root, args: { input } }) {
+    return Group.create(input)
   }
 
   read ({ root, query }) {
