@@ -1,20 +1,19 @@
 const express = require('express')
 const { graphqlExpress, graphiqlExpress } = require('apollo-server-express')
 const bodyParser = require('body-parser')
+const pino = require('pino')
 const cors = require('cors')
 const schema = require('./schema')
-// const { AuthRouter } = require('./controllers')
-// const connectPlugins = require('../plugins')
 const plugins = require('./plugins')
 
 class Server {
   constructor (port = 9000, dev = false) {
     this._server = express()
+    this._log = pino()
     this._port = port
     this._dev = dev
     this._setupMiddleware()
     this._setupGraphQL()
-    this._setupAuthEndpoints()
     this._setupPlugins()
   }
 
@@ -32,21 +31,16 @@ class Server {
     }
   }
 
-  _setupAuthEndpoints () {
-    // this._server.use('/auth', new AuthRouter())
-  }
-
   async _setupPlugins () {
-    // for (let plugin of await connectPlugins(`http://localhost:${this._port}/graphql`)) {
-    //   this._server.use(await plugin)
-    // }
-    await plugins.load()
+    for (let plugin of await plugins.load()) {
+      this._server.use(plugin)
+    }
   }
 
   start () {
     this._server.listen(this._port, err => {
       if (err) throw err
-      console.log(`Server is now running on port ${this._port}`)
+      this._log.info(`Server is now running on port ${this._port}`)
     })
   }
 

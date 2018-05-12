@@ -5,19 +5,19 @@ const pino = require('pino')
 class Plugins {
   constructor () {
     this._log = pino()
+    this._plugins = pjson.gorillaPlugins
   }
 
   async load () {
-    const plugins = pjson.gorillaPlugins
-    if (!plugins) this._log.info('No plugins loaded')
-    await this._install(plugins)
-    return
+    if (!this._plugins) return this._log.info('No plugins loaded')
+    await this._install()
+    return Object.keys(this._plugins).map(url => require(url))
   }
 
-  _getUrls (plugins) {
+  _getUrls () {
     let result = []
-    for (let key in plugins) {
-      result.push(plugins[key])
+    for (let key in this._plugins) {
+      result.push(this._plugins[key])
     }
     return result
   }
@@ -28,19 +28,20 @@ class Plugins {
         this._log.info(`Installing ${url}`)
         const npm = spawn('npm', ['install', url, '--no-save'])
         npm.stdout.on('data', (data) => {
-          this._log.log(`stdout: ${data}`)
+          this._log.info(`stdout: ${data}`)
         })
         npm.on('close', (code) => {
-          this._log.log(`child process exited with code ${code}`)
-          resolve()
+          if (code > 0) {
+            this._log.error(`Error process exited with code ${code}`)
+            reject()
+          } else {
+            this._log.info(`child process exited with code ${code}`)
+            resolve()
+          }
         })
       })
     }
   }
-
 }
-
-const demo = new Plugins()
-demo.load()
 
 module.exports = new Plugins()
