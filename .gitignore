@@ -33,5 +33,5 @@ yarn-error.log*
 yarn.lock
 .idea
 
-# To ignore packages install by plugins
+# To ignore packages installed by plugins
 package-lock.json
