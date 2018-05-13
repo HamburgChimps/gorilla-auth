@@ -8,4 +8,7 @@ type Mutation {
 
   createUser(input: CreateUserInput): CreateUserPayload
   createGroup(input: CreateGroupInput): CreateGroupPayload
+
+  createMQTTGrant(input: CreateMQTTGrantInput): CreateMQTTGrantPayload
+  createAPIGrant(input: CreateAPIGrantInput): CreateAPIGrantPayload
 }

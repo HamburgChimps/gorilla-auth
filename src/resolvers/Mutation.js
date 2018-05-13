@@ -1,7 +1,8 @@
 const {
   user,
   group,
-  auth
+  auth,
+  grant
 } = require('../connectors')
 
 const Mutation = {
@@ -13,17 +14,19 @@ const Mutation = {
     return group.create({ root, args })
   },
   login (root, args) {
-    return auth.authenticateUserWithPassword(args)
+    const { input } = args
+    return auth.authenticateUserWithPassword(input)
   },
   async loginIntoMqtt (root, args) {
-    const authenticated = await auth.authenticateUserWithPassword(args)
+    const { input } = args
+    const authenticated = await auth.authenticateUserWithPassword(input)
     if (!authenticated) return { result: 'FORBIDDEN' }
-    const { isAllowed } = await auth.authorizeMQTTConnect(args)
+    const { isAllowed } = await auth.authorizeMQTTConnect(input)
     if (isAllowed) {
       return {
         result: 'ok',
         modifiers: {
-          client_id: args.client_id,
+          client_id: input.client_id,
           mountpoint: ''
         }
       }
@@ -32,29 +35,54 @@ const Mutation = {
     }
   },
   async subscribeAuth (root, args) {
-    const { username, topics, namespace } = args
-    const authorizedTopics = await auth.authorizeMQTTSubscribe({
+    const { input } = args
+    const { name, topics, namespace } = input
+    const allowedTopics = await auth.authorizeMQTTSubscribe({
       namespace,
-      name: username,
+      name,
       mqttGrants: topics
-    }).map(({ isAllowed, grant }) => {
+    })
+    const authorizedTopics = allowedTopics.map(({ isAllowed, grant }) => {
       if (!isAllowed) grant.qos = 128
       return grant
     })
     return {
       result: 'ok',
+      modifiers: {
+        client_id: input.client_id,
+        mountpoint: ''
+      },
       topics: authorizedTopics
     }
   },
   async publishAuth (root, args) {
-    const { username, topic, qos, namespace } = args
+    const { input } = args
+    const { name, topic, qos, namespace } = input
     const { isAllowed } = await auth.authorizeMQTTPublish({
       namespace,
-      name: username,
+      name,
       mqttGrant: { topic, qos }
     })
-    if (isAllowed) return { result: 'ok' }
+    if (isAllowed) return {
+      result: 'ok',
+      modifiers: {
+        client_id: input.client_id,
+        mountpoint: ''
+      }
+    }
     else return { result: 'FORBIDDEN' }
+  },
+  async createMQTTGrant (root, args) {
+    const { input } = args
+    console.log(input)
+    const mqttGrant = await grant.createMQTTGrant(input)
+    return mqttGrant
+  },
+  async createAPIGrant (root, args) {
+    const { input } = args
+    console.log(input)
+    const mqttGrant = await grant.createAPIGrant(input)
+    return mqttGrant
   }
 }
 

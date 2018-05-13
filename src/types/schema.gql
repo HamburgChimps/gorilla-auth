@@ -21,10 +21,15 @@ type Group {
   grants: [Grant]
   members: [User]
 }
+enum GrantType {
+  MQTT
+  API
+}
 
 type Grant {
   id: Int
   owner: Group
-  permission: String
+  grant_type: GrantType!
+  permission: String!
   resource: String
 }
