@@ -7,7 +7,6 @@ const {
 
 const Mutation = {
   async createUser (root, args) {
-    console.log(user)
     return user.create({ root, args })
   },
   async createGroup (root, args) {
@@ -74,13 +73,11 @@ const Mutation = {
   },
   async createMQTTGrant (root, args) {
     const { input } = args
-    console.log(input)
     const mqttGrant = await grant.createMQTTGrant(input)
     return mqttGrant
   },
   async createAPIGrant (root, args) {
     const { input } = args
-    console.log(input)
     const mqttGrant = await grant.createAPIGrant(input)
     return mqttGrant
   }

@@ -45,6 +45,7 @@ class Server {
   }
 
   stop () {
+    this._log.info(`Stopping server running on port ${this._port}`)
     return this._server.close()
   }
 }

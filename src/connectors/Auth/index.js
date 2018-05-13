@@ -2,8 +2,13 @@ const bcrypt = require('bcrypt')
 const { Op } = require('sequelize')
 const { User, Grant, Group } = require('../models')
 const mqttRegexBuilder = require('mqtt-regex-builder')
+const pino = require('pino')
 
 class AuthConnector {
+  constructor () {
+    this._log = pino()
+  }
+
   async authenticateUserWithPassword ({ namespace, name, password }) {
     try {
       let authenticated = false
@@ -12,7 +17,7 @@ class AuthConnector {
       authenticated = await bcrypt.compare(password, user.encrypted_password)
       return authenticated
     } catch (err) {
-      console.log(err)
+      this._log.error(err)
     }
   }
 
@@ -63,7 +68,7 @@ class AuthConnector {
           return true
         }
         if (!userGrant.data.topic) return false
-        if (userGrant.data.topic === '#' ) return true
+        if (userGrant.data.topic === '#') return true
         const topicRegex = mqttRegexBuilder(userGrant.data.topic)
         const match = topicRegex.exec(grant.topic)
         if (match && match.length > 0) {
@@ -76,6 +81,7 @@ class AuthConnector {
       return { isAllowed: false, grant }
     })
   }
+
   async authorizeMQTTPublish ({ namespace, name, mqttGrant }) {
     const userGrants = await Grant.findAll({
       where: {
@@ -98,7 +104,7 @@ class AuthConnector {
         return true
       }
       if (!userGrant.data.topic) return false
-      if (userGrant.data.topic === '#' ) return true
+      if (userGrant.data.topic === '#') return true
       const topicRegex = mqttRegexBuilder(userGrant.data.topic)
       const match = topicRegex.exec(mqttGrant.topic)
       if (match && match.length > 0) {
