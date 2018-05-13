@@ -62,6 +62,8 @@ class AuthConnector {
         if (userGrant.data.topic === grant.topic) {
           return true
         }
+        if (!userGrant.data.topic) return false
+        if (userGrant.data.topic === '#' ) return true
         const topicRegex = mqttRegexBuilder(userGrant.data.topic)
         const match = topicRegex.exec(grant.topic)
         if (match && match.length > 0) {
@@ -95,6 +97,8 @@ class AuthConnector {
       if (userGrant.data.topic === mqttGrant.topic) {
         return true
       }
+      if (!userGrant.data.topic) return false
+      if (userGrant.data.topic === '#' ) return true
       const topicRegex = mqttRegexBuilder(userGrant.data.topic)
       const match = topicRegex.exec(mqttGrant.topic)
       if (match && match.length > 0) {

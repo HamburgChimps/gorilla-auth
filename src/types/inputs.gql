@@ -27,10 +27,48 @@ type CreateGroupPayload {
   tokens: [Token]
 }
 
+# Creante Grant
+enum MQTTPermission {
+  CONNECT
+  SUBSCRIBE
+  PUBLISH
+}
+
+enum APIPermission {
+  READ
+  WRITE
+}
+
+input CreateMQTTGrantInput {
+  namespace: String!
+  name: String!
+  permission: MQTTPermission!
+  topic: String
+}
+
+type CreateMQTTGrantPayload {
+  grant_type: GrantType!
+  permission: MQTTPermission!
+  topic: String
+}
+
+input CreateAPIGrantInput {
+  namespace: String!
+  name: String!
+  permission: APIPermission!
+  resource: String!
+}
+
+type CreateAPIGrantPayload {
+  grant_type: GrantType!
+  permission: APIPermission!
+  resource: String!
+}
+
 # Login Into Mqtt Payload
 input LoginIntoMqttInput {
   namespace: String
-  username: String
+  name: String
   password: String
   client_id: String
 }
@@ -52,23 +90,34 @@ input LoginInput {
   password: String!
 }
 
+input TopicInput {
+  topic: String!
+  qos: Int
+}
+
+type Topic {
+  topic: String!,
+  qos: Int
+}
+
 # Subscribe
 input SubscribeAuthInput {
-  username: String!
   namespace: String!
-  topics: [String]!
+  client_id: String
+  name: String!
+  topics: [TopicInput!]
 }
 
 type SubscribeAuthPayload {
   result: String!
-  namespace: String!
   modifiers: Modifier
-  topics: [String]!
+  topics: [Topic]!
 }
 
 # Publish
 input PublishAuthInput {
-  username: String!
+  name: String!
+  client_id: String
   namespace: String!
   topic: String!
   qos: Int!
@@ -76,4 +125,5 @@ input PublishAuthInput {
 
 type PublishAuthPayload {
   result: String!
+  modifiers: Modifier,
 }
