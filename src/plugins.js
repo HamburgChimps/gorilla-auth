@@ -11,10 +11,10 @@ class Plugins {
     if (!this._plugins) return this._log.info('No plugins loaded')
     return Object.keys(this._plugins).map(plugin => {
       try {
-        const plugin = require(plugin)
-        return plugin
+        const pluginPackage = require(plugin)
+        return pluginPackage
       } catch (err) {
-        this._log.info(`Plugin ${plugin} was not found on, ignoring`)
+        this._log.info(`Plugin ${plugin} was not found, ignoring.`, err)
       }
     })
   }
