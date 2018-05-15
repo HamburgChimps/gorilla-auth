@@ -14,8 +14,7 @@ class Plugins {
         const plugin = require(plugin)
         return plugin
       } catch (err) {
-        this._log.error(`Error not able to load plugin ${plugin}`)
-        throw err
+        this._log.info(`Plugin ${plugin} was not found on, ignoring`)
       }
     })
   }
