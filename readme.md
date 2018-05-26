@@ -1,2 +1,2 @@
 # Gorilla Auth
-Generic Auth Service
+General purpose authentication service with a GraphQL interface and plugin interface.
